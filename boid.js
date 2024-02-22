@@ -1,19 +1,8 @@
-
-function distance(boid1, boid2, dp){
-    if(boid1.id > boid2.id){
-        return distance(boid2, boid1, dp);
-    }
-    let key = boid1.id+" " + boid2.id
-    if(dp.has(key)){
-        return dp.get(key);
-    }
-    else{
-        dp.set(key, dist(boid1.position.x, boid1.position.y, boid2.position.x, boid2.position.y));
-        return dp.get(key);
-    }
+function distance(boid1, boid2) {
+    return dist(boid1.position.x, boid1.position.y, boid2.position.x, boid2.position.y);
 }
 class Boid {
-    constructor(e, id) {
+    constructor(e) {
 
         if (!e) {
             this.position = createVector(random(width), random(height));
@@ -28,24 +17,18 @@ class Boid {
         this.maxForce = 0.2;
         this.maxSpeed = 4;
         this.r = 5;
-        this.id = id;
+        this.perceptionRadius = 3;
     }
 
+    align(nearby) {
 
-
-    align(boids, dp) {
-        
         let sf = createVector();
         let total = 0;
-        let perceptionRadius = 25;
+        for (let boid of nearby) {
+            if (boid === this) continue;
+            sf.add(boid.velocity);
+            total++;
 
-        for (let boid of boids) {
-            if(boid === this ) continue;
-            let d = distance(boid, this, dp);
-            if (boid != this && d <= perceptionRadius) {
-                sf.add(boid.velocity);
-                total++;
-            }
         }
 
         if (total > 0) {
@@ -54,23 +37,17 @@ class Boid {
             sf.sub(this.velocity);
             sf.limit(this.maxForce);
         }
-
         return sf;
     }
 
-    cohesion(boids, dp) {
-
+    cohesion(nearby) {
         let sf = createVector();
         let total = 0;
-        let perceptionRadius = 50;
 
-        for (let boid of boids) {
-            if(boid === this ) continue
-            let d = distance(boid, this, dp);
-            if (boid != this && d <= perceptionRadius) {
-                sf.add(boid.position);
-                total++;
-            }
+        for (let boid of nearby) {
+            if (boid === this) continue;
+            sf.add(boid.position);
+            total++;
         }
 
         if (total > 0) {
@@ -84,14 +61,13 @@ class Boid {
         return sf;
     }
 
-    separation(boids, dp) {
-        
+    separation(boids) {
         let sf = createVector();
         let total = 0;
         let perceptionRadius = 24;
         for (let boid of boids) {
-            if(boid === this ) continue
-            let d = distance(boid, this, dp);
+            if (boid === this) continue
+            let d = distance(boid, this);
             if (boid != this && d <= perceptionRadius) {
                 let diff = p5.Vector.sub(this.position, boid.position);
                 diff.div(d);
@@ -103,11 +79,9 @@ class Boid {
             sf.div(total);
             sf.setMag(this.maxSpeed)
             sf.sub(this.velocity)
-            sf.limit(this.maxForce);
+            sf.limit(0.3);
         }
-
         return sf;
-
     }
 
     edge() {
@@ -124,9 +98,14 @@ class Boid {
     }
 
     flock(boids, dp) {
-        let steering = this.align(boids, dp);
-        let cohesion = this.cohesion(boids, dp);
-        let separation = this.separation(boids, dp);
+        let nearby = qt.query(new Rectangle(this.position.x, this.position.y, 25, 25));
+        qcount.innerHTML = nearby.length;
+
+        let steering = this.align(nearby, dp);
+        nearby = qt.query(new Rectangle(this.position.x, this.position.y, 50, 50));
+        let cohesion = this.cohesion(nearby, dp);
+        nearby = qt.query(new Rectangle(this.position.x, this.position.y, 24, 24));
+        let separation = this.separation(nearby, dp);
 
         separation.mult(Number.parseInt(separationSlider.value));
         cohesion.mult(Number.parseInt(cohesionSlider.value));
@@ -136,6 +115,7 @@ class Boid {
         this.acceleration.add(cohesion);
         this.acceleration.add(separation);
     }
+
     update() {
         this.position.add(this.velocity);
         this.velocity.add(this.acceleration);
@@ -146,7 +126,7 @@ class Boid {
 
     show() {
         let theta = this.velocity.heading() + radians(90);
-        fill(127);
+        fill(random(255), random(255), random(255));
         stroke(200);
         push();
         translate(this.position.x, this.position.y);
@@ -157,6 +137,5 @@ class Boid {
         vertex(this.r, this.r * 2);
         endShape(CLOSE);
         pop();
-
     }
 }

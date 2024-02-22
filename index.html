@@ -3,6 +3,7 @@
 <head>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
   <script src="script.js"></script>
+  <script src="quadtree.js"></script>
   <script src="boid.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
@@ -21,31 +22,44 @@
 
 
     <div>
-      Number of boids: <span id="count">10</span>
+      fps: <span id="fps"></span>
     </div>
     <div>
-      <label for="alignment">Alignment</label>
-      <input type="range" id="alignSlider" name="alignment" min="0" max="5" , value="1.5" step="0.1">
-    </div>
+      <div>
+        Number of boids: <span id="count"></span>
+      </div>
+      <div>
+        <div>
+          Number of boids queried: <span id="qcount"></span>
+        </div>
 
-    <div>
-      <label for="coehsion">Cohesion</label>
-      <input type="range" id="cohesionSlider" name="coehsion" min="0" max="5" , value="1.5" step="0.1">
-    </div>
+        <div>
+          <label for="quadtree">Show the quadtree? </label>
+          <input type="checkbox" id="quadtree" name="quadtree">
 
-    <div>
-      <label for="alignment">Separation</label>
-      <input type="range" id="separationSlider" name="alignment" min="0" max="5" , value="1.5" step="0.1">
-    </div>
-    <div>
-      <label for="alignment">Velocity</label>
-      <input type="range" id="velocity" name="velocity" min="0" max="5" , value="1.5" step="0.1">
+        </div>
+
+        <div>
+          <label for="alignment">Alignment</label>
+          <input type="range" id="alignSlider" name="alignment" min="0" max="5" , value="1.5" step="0.1">
+        </div>
+
+        <div>
+          <label for="coehsion">Cohesion</label>
+          <input type="range" id="cohesionSlider" name="coehsion" min="0" max="5" , value="1.5" step="0.1">
+        </div>
+
+        <div>
+          <label for="alignment">Separation</label>
+          <input type="range" id="separationSlider" name="alignment" min="0" max="5" , value="1.5" step="0.1">
+        </div>
+      </div>
     </div>
   </div>
 
   <footer>
-   <span>Aryan Ganotra 2K18/CO/096</span>
-   <span>Bhanu Pratap Singh 2K18/CO/109</span>
+    <span>Aryan Ganotra 2K18/CO/096</span>
+    <span>Bhanu Pratap Singh 2K18/CO/109</span>
   </footer>
 </body>
 
